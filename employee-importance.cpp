@@ -26,10 +26,7 @@ public:
             for(int i = 0; i < employees[num]->subordinates.size(); i++) res += getImportance(employees, employees[num]->subordinates[i]);
         }
         return res;
-        */
         
-        // 32ms, faster than 69.90%
-        /*
         int res = 0;
         queue<int> q;
         q.push(id);
