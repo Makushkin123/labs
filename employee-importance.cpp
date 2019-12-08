@@ -42,9 +42,7 @@ public:
             q.pop();
         }
         return res;
-        */
-        
-        // 32ms, faster than 69.90%
+       
         int res = 0;
         queue<int> q;
         q.push(id);
