@@ -8,118 +8,63 @@ https://leetcode.com/problems/symmetric-tree/
  *     TreeNode(int x) : val(x), left(NULL), right(NULL) {}
  * };
  */
+//https://leetcode.com/problems/symmetric-tree/
 class Solution {
 public:
-    bool isSymmetric(TreeNode* root) {
-        queue<TreeNode*>q1,q2;
-        
-        if(!root)
-            return true;
-        
-        q1.push(root->left);
-        q2.push(root->right);
-        
-        TreeNode* a,*b;
-        
-        while(!q1.empty()&&!q2.empty()){
-            a=q1.front();
-            q1.pop();
-            b=q2.front();
-            q2.pop();
-            
-            if(a==NULL && b==NULL)
-                continue;
-            else if(!a||!b){
-                return false;
-            }
-            
-            if(a->val!=b->val)
-                return false;
-            
-            q1.push(a->left);
-            q1.push(a->right);
-            q2.push(b->right);
-            q2.push(b->left);
-            
-            
-        }
-        
+    bool palin(vector<int> v)
+    {
+        int sz=v.size();
+        for(int i=0 ; i<sz ; i++)
+        if(v[i]!=v[sz-1-i]) return false;
         return true;
-        
+    }
+    bool isSymmetric(TreeNode* root) 
+    {
+        if(!root) return true;
+        int n,cn;
+        queue<TreeNode*> q;
+        queue<int> nq;
+        TreeNode* cur;
+        q.push(root);
+        nq.push(root->val);
+        vector<int> v;
+        bool an=true;
+        while(!q.empty())
+        {
+            an=true;
+            n=q.size();
+            v.clear();
+            for(int i=0 ; i<n ; i++)
+            {
+                cur=q.front();
+                cn=nq.front();
+                v.push_back(cn);
+                q.pop();
+                nq.pop();
+                if(cur) 
+                {
+                    an=false;
+                    q.push(cur->left);
+                    if(cur->left)
+                    nq.push(cur->left->val);
+                    else nq.push(-1);
+                    
+                    q.push(cur->right);
+                    if(cur->right)
+                    nq.push(cur->right->val);
+                    else nq.push(-1);
+                }
+                else
+                {
+                    q.push(NULL);
+                    q.push(NULL);
+                    nq.push(-1);
+                    nq.push(-1);
+                }
+            }
+            if(!palin(v)) return false;
+            if(an) break;
+        }
+        return true;
     }
 };
-
-void trimLeftTrailingSpaces(string &input) {
-    input.erase(input.begin(), find_if(input.begin(), input.end(), [](int ch) {
-        return !isspace(ch);
-    }));
-}
-
-void trimRightTrailingSpaces(string &input) {
-    input.erase(find_if(input.rbegin(), input.rend(), [](int ch) {
-        return !isspace(ch);
-    }).base(), input.end());
-}
-
-TreeNode* stringToTreeNode(string input) {
-    trimLeftTrailingSpaces(input);
-    trimRightTrailingSpaces(input);
-    input = input.substr(1, input.length() - 2);
-    if (!input.size()) {
-        return nullptr;
-    }
-
-    string item;
-    stringstream ss;
-    ss.str(input);
-
-    getline(ss, item, ',');
-    TreeNode* root = new TreeNode(stoi(item));
-    queue<TreeNode*> nodeQueue;
-    nodeQueue.push(root);
-
-    while (true) {
-        TreeNode* node = nodeQueue.front();
-        nodeQueue.pop();
-
-        if (!getline(ss, item, ',')) {
-            break;
-        }
-
-        trimLeftTrailingSpaces(item);
-        if (item != "null") {
-            int leftNumber = stoi(item);
-            node->left = new TreeNode(leftNumber);
-            nodeQueue.push(node->left);
-        }
-
-        if (!getline(ss, item, ',')) {
-            break;
-        }
-
-        trimLeftTrailingSpaces(item);
-        if (item != "null") {
-            int rightNumber = stoi(item);
-            node->right = new TreeNode(rightNumber);
-            nodeQueue.push(node->right);
-        }
-    }
-    return root;
-}
-
-string boolToString(bool input) {
-    return input ? "True" : "False";
-}
-
-int main() {
-    string line;
-    while (getline(cin, line)) {
-        TreeNode* root = stringToTreeNode(line);
-        
-        bool ret = Solution().isSymmetric(root);
-
-        string out = boolToString(ret);
-        cout << out << endl;
-    }
-    return 0;
-}
